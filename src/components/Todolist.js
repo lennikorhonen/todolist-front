@@ -1,6 +1,13 @@
 import React, {useState} from 'react';
 import 'react-table-v6/react-table.css';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField'
 import Todotable from './Todotable';
+import IconButton from '@material-ui/core/IconButton';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Tooltip from '@material-ui/core/Tooltip';
+
+
 
 export default function Todolist() {
 
@@ -16,9 +23,12 @@ export default function Todolist() {
     setTodo({...todo, [event.target.name]: event.target.value});
   }
 
-  const deleteTodo = (event) => {
-    event.preventDefault();
-    setTodos(todos.filter((todo, index) => index !== parseInt(event.target.id)));
+  const deleteTodo = (row) => {
+    setTodos(todos.filter((todo, index) => index !== row));
+  }
+
+  const clearTodos = () => {
+    setTodos([]);
   }
 
   const columns = [{
@@ -28,21 +38,23 @@ export default function Todolist() {
     Header: 'Date',
     accessor: 'date'
   }, {
-    Cell: ({index}) => <button id={index} onClick={deleteTodo}>Delete</button>,
+    Cell: row => <Button color = "secondary" size = "small" onClick={() => deleteTodo(row.index)}>Delete</Button>,
     filterable: false,
     sortable: false,
-    width: 65
+    minWidth: 30
   }]
 
     return (
         <div>
         <form onSubmit={addTodo}>
-        <fieldset>
-          <legend>Add todo:</legend>
-          Description: <input type="text" name="desc" onChange={inputChanged} value={todo.desc}/>
-          Date: <input type="date" name="date" onChange={inputChanged} value={todo.date}/>
-          <input type="submit" value="Add" />
-          </fieldset>
+          <TextField placeholder="Description" style={{marginRight: 15}} label="Description" name="desc" onChange={inputChanged} value={todo.desc}/>
+          <TextField placeholder="Date" style={{marginRight: 15}} label="Date" name="date" onChange={inputChanged} value={todo.date}/>
+          <Tooltip title="Add Todo">
+          <IconButton placeholder="Add" style={{marginTop: 5}} onClick={addTodo}>
+            <AddCircleIcon color="primary" fontSize="large"/>
+          </IconButton>
+          </Tooltip>
+          <Button variant='contained' color='secondary' onClick={() => clearTodos()}>Clear Todos</Button>
           <Todotable todos={todos} columns={columns}/>
         </form>
       </div>
